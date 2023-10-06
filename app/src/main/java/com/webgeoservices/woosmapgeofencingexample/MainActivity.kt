@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.widget.ListView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -18,8 +19,6 @@ import com.webgeoservices.woosmapgeofencing.WoosmapSettings
 import com.webgeoservices.woosmapgeofencingcore.database.MovingPosition
 import com.webgeoservices.woosmapgeofencingcore.database.WoosmapDb
 import com.webgeoservices.woosmapgeofencingexample.adapters.ViewPagerAdapter
-import com.webgeoservices.woosmapgeofencingexample.fragments.EventFragment
-import com.webgeoservices.woosmapgeofencingexample.fragments.LocationFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -102,7 +101,7 @@ class MainActivity : AppCompatActivity() {
             trackingStarted = !trackingStarted
             if (trackingStarted){
                 view.backgroundTintList = resources.getColorStateList(R.color.colorPrimary)
-                woosmap.startTracking(Woosmap.ConfigurationProfile.passiveTracking)
+                woosmap.startTracking(Woosmap.ConfigurationProfile.liveTracking)
             }
             else{
                 view.backgroundTintList = resources.getColorStateList(R.color.colorAccent)
@@ -146,11 +145,13 @@ class MainActivity : AppCompatActivity() {
             applicationContext
         ).movingPositionsDao.getLiveDataMovingPositions(-1)
 
-
         movingPositionList.observe(
             this
         ) { movingPositions ->
-            viewPagerAdapter.locationFragment.loadData(movingPositions.toList() as ArrayList<MovingPosition>)
+            if (movingPositions.isNotEmpty()){
+                val arrayList = ArrayList<MovingPosition>(movingPositions.toList())
+                viewPagerAdapter.locationFragment.loadData(arrayList)
+            }
         }
     }
 

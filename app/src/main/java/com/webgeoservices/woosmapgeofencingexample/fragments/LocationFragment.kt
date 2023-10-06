@@ -1,6 +1,5 @@
 package com.webgeoservices.woosmapgeofencingexample.fragments
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,38 +9,34 @@ import androidx.fragment.app.Fragment
 import com.webgeoservices.woosmapgeofencingcore.database.MovingPosition
 import com.webgeoservices.woosmapgeofencingexample.R
 import com.webgeoservices.woosmapgeofencingexample.adapters.LocationDataAdapter
-import java.util.Collections
 
 
 class LocationFragment: Fragment() {
-    private var locationsList: ListView? = null
-    private var mContext: Context? = null
-    private lateinit var adapter: LocationDataAdapter
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        mContext = context;
-    }
+    private var locationsListView: ListView? = null
+    private val movingPositions: ArrayList<MovingPosition> = ArrayList()
+    private lateinit var dataAdapter: LocationDataAdapter
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
+        inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view: View = inflater.inflate(R.layout.location_list_fragment, container, false)
-        locationsList = view.findViewById<View>(R.id.location_list) as ListView
+        val view = inflater.inflate(R.layout.location_list_fragment, container, false)
+        locationsListView = view.findViewById(R.id.location_list)
+        dataAdapter = LocationDataAdapter(requireContext(), movingPositions)
+        locationsListView?.adapter = dataAdapter
         return view
     }
 
-    fun loadData(arrayOfPlaceData: ArrayList<MovingPosition>) {
-        if (locationsList == null){
+    fun loadData(movingPositions: ArrayList<MovingPosition>) {
+        if (locationsListView == null) {
             return
         }
-        adapter = LocationDataAdapter(mContext!!, arrayOfPlaceData)
-        locationsList?.adapter ?: adapter
+        dataAdapter.clear()
+        dataAdapter.addAll(movingPositions)
+        dataAdapter.notifyDataSetChanged()
     }
 
     fun clearData() {
-        adapter.clear()
+        dataAdapter.clear()
     }
 }

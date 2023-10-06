@@ -19,10 +19,10 @@ class LocationDataAdapter(context: Context, objects: ArrayList<MovingPosition>) 
         val movingPosition = getItem(position)
         val displayDateFormat = SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault())
         if (view == null){
-            view = LayoutInflater.from(context).inflate(R.layout.location_item, parent)
+            view = LayoutInflater.from(context).inflate(R.layout.location_item, null)
         }
-        val coordinateTextView: TextView = convertView!!.findViewById(R.id.coordinate)
-        val dateTextView: TextView = convertView.findViewById(R.id.date)
+        val coordinateTextView: TextView = view!!.findViewById(R.id.coordinate)
+        val dateTextView: TextView = view!!.findViewById(R.id.date)
         movingPosition?.let {
             coordinateTextView.text = "${movingPosition.lat}, ${movingPosition.lng}"
             dateTextView.text = displayDateFormat.format(movingPosition.dateTime)
