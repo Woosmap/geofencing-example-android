@@ -14,6 +14,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.webgeoservices.woosmapgeofencing.Woosmap
 import com.webgeoservices.woosmapgeofencing.WoosmapSettings
+import com.webgeoservices.woosmapgeofencingcore.database.MovingPosition
 import com.webgeoservices.woosmapgeofencingcore.database.WoosmapDb
 import com.webgeoservices.woosmapgeofencingexample.fragments.EventFragment
 import com.webgeoservices.woosmapgeofencingexample.fragments.LocationFragment
@@ -139,10 +140,11 @@ class MainActivity : AppCompatActivity() {
             applicationContext
         ).movingPositionsDao.getLiveDataMovingPositions(-1)
 
+
         movingPositionList.observe(
             this
         ) { movingPositions ->
-            Log.d("", movingPositions.size.toString() + "")
+            locationFragment.loadData(movingPositions.toList() as ArrayList<MovingPosition>)
         }
     }
 

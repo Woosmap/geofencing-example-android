@@ -11,8 +11,8 @@ import com.webgeoservices.woosmapgeofencingexample.R
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class LocationDataAdapter(context: Context, objects: ArrayList<MovingPosition?>?) :
-    ArrayAdapter<MovingPosition>(context, 0, objects!!) {
+class LocationDataAdapter(context: Context, objects: ArrayList<MovingPosition>) :
+    ArrayAdapter<MovingPosition>(context, 0, objects) {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var view = convertView

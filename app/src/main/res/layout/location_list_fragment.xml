@@ -15,11 +15,11 @@
         android:padding="10dp"
         >
     </TextView>
-    <androidx.recyclerview.widget.RecyclerView
+    <ListView
         android:id="@+id/location_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         >
-    </androidx.recyclerview.widget.RecyclerView>
+    </ListView>
 
 </LinearLayout>
