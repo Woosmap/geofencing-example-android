@@ -10,12 +10,14 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.viewpager.widget.ViewPager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.webgeoservices.woosmapgeofencing.Woosmap
 import com.webgeoservices.woosmapgeofencing.WoosmapSettings
 import com.webgeoservices.woosmapgeofencingcore.database.MovingPosition
 import com.webgeoservices.woosmapgeofencingcore.database.WoosmapDb
+import com.webgeoservices.woosmapgeofencingexample.adapters.ViewPagerAdapter
 import com.webgeoservices.woosmapgeofencingexample.fragments.EventFragment
 import com.webgeoservices.woosmapgeofencingexample.fragments.LocationFragment
 
@@ -27,8 +29,8 @@ class MainActivity : AppCompatActivity() {
     private val REQUEST_NOTIFICATIONS_PERMISSION_CODE = 104
 
     private lateinit var woosmap:Woosmap
-    private lateinit var locationFragment: LocationFragment
-    private lateinit var eventFragment: EventFragment
+    private lateinit var viewPager: ViewPager
+    private lateinit var viewPagerAdapter: ViewPagerAdapter
     private var trackingStarted = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,27 +70,31 @@ class MainActivity : AppCompatActivity() {
      *
      */
     private fun initializeActivityComponents(){
-        //Initialize location and event fragments
-        locationFragment = LocationFragment()
-        eventFragment = EventFragment()
-        setFragment(locationFragment)
+        viewPager = findViewById(R.id.view_pager)
+        viewPagerAdapter = ViewPagerAdapter(supportFragmentManager)
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
 
-        //Handle switching between location and events fragment
-        val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
-        bottomNav.setOnNavigationItemSelectedListener(BottomNavigationView.OnNavigationItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.navigation_location -> {
-                    setFragment(locationFragment)
-                    true
+        viewPager.adapter = viewPagerAdapter
+        viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+            override fun onPageSelected(position: Int) {
+                when (position) {
+                    0 -> bottomNavigationView.menu.findItem(R.id.navigation_location).isChecked = true
+                    1 -> bottomNavigationView.menu.findItem(R.id.navigation_events).isChecked = true
                 }
-
-                R.id.navigation_events -> {
-                    setFragment(eventFragment)
-                    true
-                }
-                else -> false
             }
+
+            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
+
+            override fun onPageScrollStateChanged(state: Int) {}
         })
+
+        bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.navigation_location -> viewPager.currentItem = 0
+                R.id.navigation_events -> viewPager.currentItem = 1
+            }
+            true
+        }
 
         //Toggle Woosmap tracking
         val toggleTackingBtn = findViewById<FloatingActionButton>(R.id.toggle_woosmap_tracking)
@@ -144,7 +150,7 @@ class MainActivity : AppCompatActivity() {
         movingPositionList.observe(
             this
         ) { movingPositions ->
-            locationFragment.loadData(movingPositions.toList() as ArrayList<MovingPosition>)
+            viewPagerAdapter.locationFragment.loadData(movingPositions.toList() as ArrayList<MovingPosition>)
         }
     }
 

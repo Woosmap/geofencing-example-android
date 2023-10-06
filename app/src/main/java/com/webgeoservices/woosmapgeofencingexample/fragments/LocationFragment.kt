@@ -34,8 +34,10 @@ class LocationFragment: Fragment() {
     }
 
     fun loadData(arrayOfPlaceData: ArrayList<MovingPosition>) {
+        if (locationsList == null){
+            return
+        }
         adapter = LocationDataAdapter(mContext!!, arrayOfPlaceData)
-        ///Collections.sort(arrayOfPlaceData, PlaceDataComparator())
         locationsList?.adapter ?: adapter
     }
 
