@@ -1,16 +1,20 @@
 package com.webgeoservices.woosmapgeofencingexample
 
+import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.webgeoservices.woosmapgeofencing.Woosmap
 import com.webgeoservices.woosmapgeofencing.WoosmapSettings
+import com.webgeoservices.woosmapgeofencingcore.database.WoosmapDb
 import com.webgeoservices.woosmapgeofencingexample.fragments.EventFragment
 import com.webgeoservices.woosmapgeofencingexample.fragments.LocationFragment
 
@@ -30,12 +34,34 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         initializeActivityComponents()
+        loadLocationData()
+        loadEventsData()
     }
 
     override fun onStart() {
         super.onStart()
         requestLocationPermissions()
     }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("WoosmapGeofencing", "BackGround")
+        if (checkLocationPermissions()) {
+            woosmap.onPause()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (checkLocationPermissions()) {
+            woosmap.onResume()
+        }
+    }
+
+    override fun onDestroy() {
+        woosmap.onDestroy()
+        super.onDestroy()
+    };
 
     /***
      *
@@ -88,6 +114,48 @@ class MainActivity : AppCompatActivity() {
 
         WoosmapSettings.foregroundLocationServiceEnable = true
         WoosmapSettings.setIndoorSearchAPIEnable(true, applicationContext)
+    }
+
+    /***
+     *
+     */
+    private fun loadEventsData(){
+        val regionLogList = WoosmapDb.getInstance(
+            applicationContext
+        ).regionLogsDAO.allLiveRegionLogs
+
+        regionLogList.observe(
+            this
+        ) { regionLogs ->
+            Log.d("", regionLogs.size.toString() + "")
+        }
+    }
+
+    /***
+     *
+     */
+    private fun loadLocationData(){
+        val movingPositionList = WoosmapDb.getInstance(
+            applicationContext
+        ).movingPositionsDao.getLiveDataMovingPositions(-1)
+
+        movingPositionList.observe(
+            this
+        ) { movingPositions ->
+            Log.d("", movingPositions.size.toString() + "")
+        }
+    }
+
+    private fun checkLocationPermissions(): Boolean {
+        val finePermissionState = ActivityCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
+        val coarsePermissionState = ActivityCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        )
+        return finePermissionState == PackageManager.PERMISSION_GRANTED || coarsePermissionState == PackageManager.PERMISSION_GRANTED
     }
 
     private fun setFragment(fragment: Fragment) {
