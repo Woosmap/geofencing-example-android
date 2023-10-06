@@ -5,7 +5,6 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.widget.ListView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -36,8 +35,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         initializeActivityComponents()
-        loadLocationData()
-        loadEventsData()
+        initializeWoosmap()
+        //loadLocationData()
+        //loadEventsData()
     }
 
     override fun onStart() {
@@ -101,14 +101,16 @@ class MainActivity : AppCompatActivity() {
             trackingStarted = !trackingStarted
             if (trackingStarted){
                 view.backgroundTintList = resources.getColorStateList(R.color.colorPrimary)
-                woosmap.startTracking(Woosmap.ConfigurationProfile.liveTracking)
+                woosmap.startTracking(Woosmap.ConfigurationProfile.passiveTracking)
             }
             else{
                 view.backgroundTintList = resources.getColorStateList(R.color.colorAccent)
                 woosmap.stopTracking()
             }
         }
+    }
 
+    private fun initializeWoosmap(){
         //Initialize Woosmap
         woosmap = Woosmap.getInstance().initializeWoosmap(applicationContext)
 
@@ -120,6 +122,20 @@ class MainActivity : AppCompatActivity() {
 
         WoosmapSettings.foregroundLocationServiceEnable = true
         WoosmapSettings.setIndoorSearchAPIEnable(true, applicationContext)
+
+        // Set location ready listener
+        woosmap.setLocationReadyListener { location ->
+            // Update the location in the list
+            viewPagerAdapter.locationFragment.addLocation(location)
+        }
+
+        // Set regionlog ready listener
+        woosmap.setRegionLogReadyListener { regionLog ->
+            Log.d(
+                "",
+                regionLog.toString()
+            )
+        }
     }
 
     /***
@@ -165,12 +181,6 @@ class MainActivity : AppCompatActivity() {
             Manifest.permission.ACCESS_COARSE_LOCATION
         )
         return finePermissionState == PackageManager.PERMISSION_GRANTED || coarsePermissionState == PackageManager.PERMISSION_GRANTED
-    }
-
-    private fun setFragment(fragment: Fragment) {
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.fragment_container, fragment)
-        fragmentTransaction.commit()
     }
 
     private fun requestLocationPermissions(){
