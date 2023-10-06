@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Woosmap Geofencing Example</string>
+    <string name="woosmap_private_key">8eb5804d-5fa3-48c4-86dd-a53926699fdb</string>
+</resources>
