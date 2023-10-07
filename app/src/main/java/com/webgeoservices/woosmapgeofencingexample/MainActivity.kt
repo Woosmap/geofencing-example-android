@@ -131,10 +131,7 @@ class MainActivity : AppCompatActivity() {
 
         // Set regionlog ready listener
         woosmap.setRegionLogReadyListener { regionLog ->
-            Log.d(
-                "",
-                regionLog.toString()
-            )
+            viewPagerAdapter.eventFragment.addRegionLog(regionLog)
         }
     }
 
