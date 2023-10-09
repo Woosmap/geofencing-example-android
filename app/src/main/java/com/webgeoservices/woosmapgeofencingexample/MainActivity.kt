@@ -1,21 +1,24 @@
 package com.webgeoservices.woosmapgeofencingexample
 
 import android.Manifest
+import android.app.Notification
+import android.app.NotificationManager
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.fragment.app.Fragment
+import androidx.core.app.NotificationCompat
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.webgeoservices.woosmapgeofencing.Woosmap
 import com.webgeoservices.woosmapgeofencing.WoosmapSettings
+import com.webgeoservices.woosmapgeofencingcore.WoosmapSettingsCore
 import com.webgeoservices.woosmapgeofencingcore.database.MovingPosition
+import com.webgeoservices.woosmapgeofencingcore.database.RegionLog
 import com.webgeoservices.woosmapgeofencingcore.database.WoosmapDb
 import com.webgeoservices.woosmapgeofencingexample.adapters.ViewPagerAdapter
 
@@ -36,8 +39,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         initializeActivityComponents()
         initializeWoosmap()
-        //loadLocationData()
-        //loadEventsData()
     }
 
     override fun onStart() {
@@ -47,7 +48,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        Log.d("WoosmapGeofencing", "BackGround")
         if (checkLocationPermissions()) {
             woosmap.onPause()
         }
@@ -132,7 +132,30 @@ class MainActivity : AppCompatActivity() {
         // Set regionlog ready listener
         woosmap.setRegionLogReadyListener { regionLog ->
             viewPagerAdapter.eventFragment.addRegionLog(regionLog)
+            showRegionNotification(regionLog)
         }
+
+        // For android version >= 8 you have to create a channel or use the woosmap's channel
+
+        // For android version >= 8 you have to create a channel or use the woosmap's channel
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            woosmap.createWoosmapNotifChannel()
+        }
+    }
+
+    private fun showRegionNotification(regionLog: RegionLog){
+        val poi = WoosmapDb.getInstance(applicationContext).poIsDAO.getPOIbyStoreId(regionLog.idStore)
+
+        val notification: Notification = NotificationCompat.Builder(applicationContext, WoosmapSettingsCore.WoosmapNotificationChannelID)
+            .setContentTitle(regionLog.eventName)
+            .setTicker("Region POI name: ${poi.name}")
+            .setSmallIcon(android.R.drawable.ic_popup_reminder)
+            .setOngoing(false) // Add the cancel action to the notification which can
+            // be used to cancel the worker
+            .build()
+
+        val notifManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notifManager.notify(101, notification)
     }
 
     /***
@@ -182,17 +205,30 @@ class MainActivity : AppCompatActivity() {
 
     private fun requestLocationPermissions(){
         ///Request for location permissions
-        requestPermissions(arrayOf(android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION),REQUEST_LOCATION_PERMISSIONS_CODE)
+        if (!checkLocationPermissions()){
+            requestPermissions(arrayOf(android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION),REQUEST_LOCATION_PERMISSIONS_CODE)
+        }
+        else{
+            requestBackgroundLocationPermission()
+        }
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
     private fun requestBackgroundLocationPermission(){
         ///Request for background location permissions
-        requestPermissions(arrayOf(android.Manifest.permission.ACCESS_BACKGROUND_LOCATION),REQUEST_BACKGROUND_LOCATION_PERMISSIONS_CODE)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            if (ActivityCompat.checkSelfPermission(applicationContext, android.Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED){
+                requestPermissions(arrayOf(android.Manifest.permission.ACCESS_BACKGROUND_LOCATION),REQUEST_BACKGROUND_LOCATION_PERMISSIONS_CODE)
+            }
+            else{
+                requestBluetoothPermissions()
+            }
+        }
     }
 
     private fun requestBluetoothPermissions(){
         ///This is optional. Only if you need to track BLE beacons
+        requestPermissions(arrayOf(android.Manifest.permission.BLUETOOTH, android.Manifest.permission.BLUETOOTH_CONNECT),REQUEST_BLUETOOTH_PERMISSION_CODE)
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             requestPermissions(arrayOf(android.Manifest.permission.BLUETOOTH, android.Manifest.permission.BLUETOOTH_CONNECT),REQUEST_BLUETOOTH_PERMISSION_CODE)
         }
