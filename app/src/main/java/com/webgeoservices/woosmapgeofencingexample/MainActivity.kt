@@ -26,10 +26,10 @@ import com.webgeoservices.woosmapgeofencingexample.models.EventDataModel
 
 class MainActivity : AppCompatActivity() {
 
-    private val REQUEST_LOCATION_PERMISSIONS_CODE = 101
-    private val REQUEST_BACKGROUND_LOCATION_PERMISSIONS_CODE = 102
-    private val REQUEST_BLUETOOTH_PERMISSION_CODE = 103
-    private val REQUEST_NOTIFICATIONS_PERMISSION_CODE = 104
+    private val REQUEST_FINE_LOCATION = 1
+    private val REQUEST_BACKGROUND_LOCATION = 2
+    private val REQUEST_BLUETOOTH = 3
+    private val REQUEST_NOTIFICATION = 4
 
     private lateinit var woosmap:Woosmap
     private lateinit var viewPager: ViewPager
@@ -158,41 +158,8 @@ class MainActivity : AppCompatActivity() {
             .setOngoing(false)
             .build()
 
-        val notifManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        notifManager.notify(101, notification)
-    }
-
-    /***
-     *
-     */
-    private fun loadEventsData(){
-        val regionLogList = WoosmapDb.getInstance(
-            applicationContext
-        ).regionLogsDAO.allLiveRegionLogs
-
-        regionLogList.observe(
-            this
-        ) { regionLogs ->
-            Log.d("", regionLogs.size.toString() + "")
-        }
-    }
-
-    /***
-     *
-     */
-    private fun loadLocationData(){
-        val movingPositionList = WoosmapDb.getInstance(
-            applicationContext
-        ).movingPositionsDao.getLiveDataMovingPositions(-1)
-
-        movingPositionList.observe(
-            this
-        ) { movingPositions ->
-            if (movingPositions.isNotEmpty()){
-                val arrayList = ArrayList<MovingPosition>(movingPositions.toList())
-                viewPagerAdapter.locationFragment.loadData(arrayList)
-            }
-        }
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.notify(101, notification)
     }
 
     private fun checkLocationPermissions(): Boolean {
@@ -208,41 +175,66 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun requestLocationPermissions(){
-        ///Request for location permissions
-        if (!checkLocationPermissions()){
-            requestPermissions(arrayOf(android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION),REQUEST_LOCATION_PERMISSIONS_CODE)
-        }
-        else{
-            requestBackgroundLocationPermission()
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(android.Manifest.permission.ACCESS_COARSE_LOCATION,android.Manifest.permission.ACCESS_FINE_LOCATION),
+                REQUEST_FINE_LOCATION
+            )
+        } else {
+            checkBackgroundLocationPermission()
         }
     }
 
-    private fun requestBackgroundLocationPermission(){
-        ///Request for background location permissions
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            if (ActivityCompat.checkSelfPermission(applicationContext, android.Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED){
-                requestPermissions(arrayOf(android.Manifest.permission.ACCESS_BACKGROUND_LOCATION),REQUEST_BACKGROUND_LOCATION_PERMISSIONS_CODE)
+    private fun checkBackgroundLocationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
+            ActivityCompat.checkSelfPermission(
+                this,
+                android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(android.Manifest.permission.ACCESS_BACKGROUND_LOCATION),
+                REQUEST_BACKGROUND_LOCATION
+            )
+        } else {
+            checkBluetoothPermissions()
+        }
+    }
+
+    private fun checkBluetoothPermissions() {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                android.Manifest.permission.BLUETOOTH
+            ) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(android.Manifest.permission.BLUETOOTH,android.Manifest.permission.BLUETOOTH_CONNECT),
+                REQUEST_BLUETOOTH
+            )
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (ActivityCompat.checkSelfPermission(
+                        this,
+                        android.Manifest.permission.POST_NOTIFICATIONS
+                    ) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(
+                        this,
+                        arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                        REQUEST_NOTIFICATION
+                    )
+                }
+            } else {
+                // All permissions are granted, proceed with your logic here
             }
-            else{
-                requestBluetoothPermissions()
-            }
         }
     }
 
-    private fun requestBluetoothPermissions(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            requestPermissions(arrayOf(android.Manifest.permission.BLUETOOTH, android.Manifest.permission.BLUETOOTH_CONNECT),REQUEST_BLUETOOTH_PERMISSION_CODE)
-        }
-        else{
-            requestPermissions(arrayOf(android.Manifest.permission.BLUETOOTH),REQUEST_BLUETOOTH_PERMISSION_CODE)
-        }
-    }
-
-    private fun requestNotificationsPermissions(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),REQUEST_NOTIFICATIONS_PERMISSION_CODE)
-        }
-    }
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -250,44 +242,30 @@ class MainActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (permissions.isEmpty()){
-            return
-        }
-        ///Check if the FINE_LOCATION permission is granted. If yes only then proceed further with other permissions.
-        if (requestCode == REQUEST_LOCATION_PERMISSIONS_CODE){
-            if(grantResults[0] != PackageManager.PERMISSION_GRANTED){
-                Toast.makeText(applicationContext, "Location permission not granted. App may not behave as expected", Toast.LENGTH_SHORT).show()
-                return
+        when (requestCode) {
+            REQUEST_FINE_LOCATION -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    checkBackgroundLocationPermission()
+                } else {
+                    Toast.makeText(this, "Fine location permission denied", Toast.LENGTH_SHORT).show()
+                }
             }
-
-            ///If device OS is >= Q then ask for Background location access
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
-                requestBackgroundLocationPermission()
+            REQUEST_BACKGROUND_LOCATION -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    checkBluetoothPermissions()
+                } else {
+                    Toast.makeText(this, "Background location permission denied", Toast.LENGTH_SHORT).show()
+                }
             }
-            else{ ///Request Bluetooth access
-                requestBluetoothPermissions()
-            }
-        }
-        ///Check if the background location access is granted.
-        if (requestCode == REQUEST_BACKGROUND_LOCATION_PERMISSIONS_CODE){
-            if(grantResults[0] != PackageManager.PERMISSION_GRANTED){
-                Toast.makeText(applicationContext, "Background location permission not granted. App may not behave as expected", Toast.LENGTH_SHORT).show()
-            }
-            ///Request BLE permission.
-            requestBluetoothPermissions()
-        }
-
-        if (requestCode == REQUEST_BLUETOOTH_PERMISSION_CODE){
-            if(grantResults[0] != PackageManager.PERMISSION_GRANTED){
-                Toast.makeText(applicationContext, "Bluetooth permission not granted. App may not behave as expected", Toast.LENGTH_SHORT).show()
-            }
-            requestNotificationsPermissions()
-        }
-
-        if (requestCode == REQUEST_NOTIFICATIONS_PERMISSION_CODE){
-            if(grantResults[0] != PackageManager.PERMISSION_GRANTED){
-                Toast.makeText(applicationContext, "Notification permission not granted. App may not behave as expected", Toast.LENGTH_SHORT).show()
+            REQUEST_BLUETOOTH -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    //Enable BLE
+                } else {
+                    Toast.makeText(this, "Bluetooth permission denied", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
+
+
 }
