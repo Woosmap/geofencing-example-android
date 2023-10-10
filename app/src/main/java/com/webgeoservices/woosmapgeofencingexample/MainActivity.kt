@@ -6,7 +6,6 @@ import android.app.NotificationManager
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -17,9 +16,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.webgeoservices.woosmapgeofencing.Woosmap
 import com.webgeoservices.woosmapgeofencing.WoosmapSettings
 import com.webgeoservices.woosmapgeofencingcore.WoosmapSettingsCore
-import com.webgeoservices.woosmapgeofencingcore.database.MovingPosition
-import com.webgeoservices.woosmapgeofencingcore.database.POI
-import com.webgeoservices.woosmapgeofencingcore.database.RegionLog
 import com.webgeoservices.woosmapgeofencingcore.database.WoosmapDb
 import com.webgeoservices.woosmapgeofencingexample.adapters.ViewPagerAdapter
 import com.webgeoservices.woosmapgeofencingexample.models.EventDataModel
@@ -89,8 +85,8 @@ class MainActivity : AppCompatActivity() {
             override fun onPageScrollStateChanged(state: Int) {}
         })
 
-        bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
+        bottomNavigationView.setOnItemSelectedListener{item ->
+            when(item.itemId){
                 R.id.navigation_location -> viewPager.currentItem = 0
                 R.id.navigation_events -> viewPager.currentItem = 1
             }
@@ -102,11 +98,11 @@ class MainActivity : AppCompatActivity() {
         toggleTackingBtn.setOnClickListener { view ->
             trackingStarted = !trackingStarted
             if (trackingStarted){
-                view.backgroundTintList = resources.getColorStateList(R.color.colorPrimary)
+                view.backgroundTintList = resources.getColorStateList(R.color.colorPrimary, applicationContext.theme)
                 woosmap.startTracking(Woosmap.ConfigurationProfile.passiveTracking)
             }
             else{
-                view.backgroundTintList = resources.getColorStateList(R.color.colorAccent)
+                view.backgroundTintList = resources.getColorStateList(R.color.colorAccent, applicationContext.theme)
                 woosmap.stopTracking()
             }
         }
@@ -210,22 +206,31 @@ class MainActivity : AppCompatActivity() {
     private fun checkBluetoothPermissions() {
         if (ActivityCompat.checkSelfPermission(
                 this,
-                android.Manifest.permission.BLUETOOTH
+                Manifest.permission.BLUETOOTH
             ) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(android.Manifest.permission.BLUETOOTH,android.Manifest.permission.BLUETOOTH_CONNECT),
-                REQUEST_BLUETOOTH
-            )
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.BLUETOOTH,Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN),
+                    REQUEST_BLUETOOTH
+                )
+            }
+            else{
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.BLUETOOTH),
+                    REQUEST_BLUETOOTH
+                )
+            }
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 if (ActivityCompat.checkSelfPermission(
                         this,
-                        android.Manifest.permission.POST_NOTIFICATIONS
+                        Manifest.permission.POST_NOTIFICATIONS
                     ) != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(
                         this,
-                        arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                        arrayOf(Manifest.permission.POST_NOTIFICATIONS),
                         REQUEST_NOTIFICATION
                     )
                 }
@@ -266,6 +271,5 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
 
 }
