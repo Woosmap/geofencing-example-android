@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ListView
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.webgeoservices.woosmapgeofencingcore.database.POI
 import com.webgeoservices.woosmapgeofencingcore.database.RegionLog
@@ -16,14 +17,9 @@ import com.webgeoservices.woosmapgeofencingexample.adapters.EventsDataAdapter
 import com.webgeoservices.woosmapgeofencingexample.models.EventDataModel
 
 class EventFragment: Fragment() {
-    private var eventList: ListView? = null
-    private var mContext: Context? = null
+    private lateinit var eventList: RecyclerView
     private var eventsDataAdapter: EventsDataAdapter? = null
     private val events: ArrayList<EventDataModel> = ArrayList()
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        mContext = context;
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,9 +27,10 @@ class EventFragment: Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view: View = inflater.inflate(R.layout.event_list_fragment, container, false)
-        eventList = view.findViewById(R.id.event_list) as ListView
-        eventsDataAdapter = EventsDataAdapter(requireContext(), events)
-        eventList?.adapter = eventsDataAdapter
+        eventList = view.findViewById(R.id.event_list)
+        eventList.layoutManager = LinearLayoutManager(context)
+        eventsDataAdapter = EventsDataAdapter(events)
+        eventList.adapter = eventsDataAdapter
         return view
     }
 
@@ -42,8 +39,7 @@ class EventFragment: Fragment() {
             return
         }
         activity?.runOnUiThread{
-            eventsDataAdapter?.insert(eventData, 0)
-            eventsDataAdapter?.notifyDataSetChanged()
+            eventsDataAdapter?.addEvent(eventData)
             eventList?.smoothScrollToPosition(0)
         }
     }

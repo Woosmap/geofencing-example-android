@@ -13,7 +13,7 @@ import com.webgeoservices.woosmapgeofencingexample.adapters.LiveLocationAdapter
 
 
 class LocationFragment: Fragment() {
-    private lateinit var locationsListView: RecyclerView
+    private lateinit var locationsList: RecyclerView
     private val liveLocations: ArrayList<Location> = ArrayList()
     private lateinit var liveLocationDataAdapter: LiveLocationAdapter
 
@@ -22,18 +22,18 @@ class LocationFragment: Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.location_list_fragment, container, false)
-        locationsListView = view.findViewById(R.id.location_list)
-        locationsListView.layoutManager = LinearLayoutManager(context)
+        locationsList = view.findViewById(R.id.location_list)
+        locationsList.layoutManager = LinearLayoutManager(context)
         liveLocationDataAdapter = LiveLocationAdapter(liveLocations)
-        locationsListView?.adapter = liveLocationDataAdapter
+        locationsList?.adapter = liveLocationDataAdapter
         return view
     }
 
     fun addLocation(location: Location){
-        if (locationsListView == null) {
+        if (locationsList == null) {
             return
         }
         liveLocationDataAdapter.addLocation(location)
-        locationsListView.smoothScrollToPosition(0)
+        locationsList.smoothScrollToPosition(0)
     }
 }

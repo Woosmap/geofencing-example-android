@@ -66,4 +66,12 @@
         android:textSize="14sp"
         android:layout_below="@+id/poi_name"
         />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"
+        android:layout_below="@+id/radius_poi_id"
+        android:layout_marginTop="5dp"
+        >
+    </View>
 </RelativeLayout>
