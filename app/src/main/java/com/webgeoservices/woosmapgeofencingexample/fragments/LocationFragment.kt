@@ -5,14 +5,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ListView
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.webgeoservices.woosmapgeofencingexample.R
 import com.webgeoservices.woosmapgeofencingexample.adapters.LiveLocationAdapter
 
 
 class LocationFragment: Fragment() {
-    private lateinit var locationsListView: ListView
+    private lateinit var locationsListView: RecyclerView
     private val liveLocations: ArrayList<Location> = ArrayList()
     private lateinit var liveLocationDataAdapter: LiveLocationAdapter
 
@@ -22,7 +23,8 @@ class LocationFragment: Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.location_list_fragment, container, false)
         locationsListView = view.findViewById(R.id.location_list)
-        liveLocationDataAdapter = LiveLocationAdapter(requireContext(), liveLocations)
+        locationsListView.layoutManager = LinearLayoutManager(context)
+        liveLocationDataAdapter = LiveLocationAdapter(liveLocations)
         locationsListView?.adapter = liveLocationDataAdapter
         return view
     }
@@ -31,8 +33,7 @@ class LocationFragment: Fragment() {
         if (locationsListView == null) {
             return
         }
-        liveLocationDataAdapter.insert(location, 0)
-        liveLocationDataAdapter.notifyDataSetChanged()
+        liveLocationDataAdapter.addLocation(location)
         locationsListView.smoothScrollToPosition(0)
     }
 }
