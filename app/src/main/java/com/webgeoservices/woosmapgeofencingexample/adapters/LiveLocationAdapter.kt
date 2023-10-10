@@ -10,6 +10,9 @@ import com.webgeoservices.woosmapgeofencingexample.R
 import java.text.SimpleDateFormat
 import java.util.Locale
 
+/***
+ * Data adapter class to populate locations RecyclerView
+ */
 class LiveLocationAdapter(private val locations: ArrayList<Location>): RecyclerView.Adapter<LiveLocationAdapter.ViewHolder>() {
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

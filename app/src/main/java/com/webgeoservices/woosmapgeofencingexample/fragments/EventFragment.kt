@@ -16,6 +16,9 @@ import com.webgeoservices.woosmapgeofencingexample.R
 import com.webgeoservices.woosmapgeofencingexample.adapters.EventsDataAdapter
 import com.webgeoservices.woosmapgeofencingexample.models.EventDataModel
 
+/***
+ * The fragment which populates the event list obtained from Woosmap SDK
+ */
 class EventFragment: Fragment() {
     private lateinit var eventList: RecyclerView
     private var eventsDataAdapter: EventsDataAdapter? = null

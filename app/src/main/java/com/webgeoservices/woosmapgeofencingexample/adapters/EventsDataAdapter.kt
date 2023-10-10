@@ -10,6 +10,9 @@ import com.webgeoservices.woosmapgeofencingexample.models.EventDataModel
 import java.text.SimpleDateFormat
 import java.util.Locale
 
+/***
+ * Data adapter class to populate events RecyclerView
+ */
 class EventsDataAdapter(private val events: ArrayList<EventDataModel>): RecyclerView.Adapter<EventsDataAdapter.ViewHolder>(){
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val eventNameTextView: TextView = itemView.findViewById(R.id.event_name)

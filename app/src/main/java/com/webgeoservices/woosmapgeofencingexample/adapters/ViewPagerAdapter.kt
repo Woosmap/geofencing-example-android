@@ -6,6 +6,9 @@ import androidx.fragment.app.FragmentPagerAdapter
 import com.webgeoservices.woosmapgeofencingexample.fragments.EventFragment
 import com.webgeoservices.woosmapgeofencingexample.fragments.LocationFragment
 
+/***
+ * Populates ViewPager with `LocationFragment` and `EventFragment`
+ */
 class ViewPagerAdapter(fragmentManager: FragmentManager): FragmentPagerAdapter(fragmentManager) {
     val locationFragment = LocationFragment()
     val eventFragment = EventFragment()

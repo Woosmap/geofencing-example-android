@@ -11,7 +11,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.webgeoservices.woosmapgeofencingexample.R
 import com.webgeoservices.woosmapgeofencingexample.adapters.LiveLocationAdapter
 
-
+/***
+ * The fragment which populates the location list obtained from Woosmap SDK
+ */
 class LocationFragment: Fragment() {
     private lateinit var locationsList: RecyclerView
     private val liveLocations: ArrayList<Location> = ArrayList()
