@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:paddingLeft="10dp"
         android:paddingRight="6dp"
-        android:text="event name"
+        android:text="Event Name"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="#4CAF50"
         android:textSize="14sp"
@@ -28,4 +28,42 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textSize="14sp"
         android:textStyle="italic" />
+    <TextView
+        android:id="@+id/poi_name_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:paddingRight="6dp"
+        android:layout_marginTop="5dp"
+        android:text="POI name: "
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@color/colorPrimary"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:layout_below="@+id/event_name"
+        />
+    <TextView
+        android:id="@+id/poi_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="5dp"
+        android:layout_toRightOf="@+id/poi_name_label"
+        android:layout_marginTop="5dp"
+        android:text="POI name"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textSize="14sp"
+        android:layout_below="@+id/event_name"
+        />
+    <TextView
+        android:id="@+id/radius_poi_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:paddingRight="6dp"
+        android:layout_marginTop="5dp"
+        android:text="Radius"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textSize="14sp"
+        android:layout_below="@+id/poi_name"
+        />
 </RelativeLayout>

@@ -18,9 +18,11 @@ import com.webgeoservices.woosmapgeofencing.Woosmap
 import com.webgeoservices.woosmapgeofencing.WoosmapSettings
 import com.webgeoservices.woosmapgeofencingcore.WoosmapSettingsCore
 import com.webgeoservices.woosmapgeofencingcore.database.MovingPosition
+import com.webgeoservices.woosmapgeofencingcore.database.POI
 import com.webgeoservices.woosmapgeofencingcore.database.RegionLog
 import com.webgeoservices.woosmapgeofencingcore.database.WoosmapDb
 import com.webgeoservices.woosmapgeofencingexample.adapters.ViewPagerAdapter
+import com.webgeoservices.woosmapgeofencingexample.models.EventDataModel
 
 class MainActivity : AppCompatActivity() {
 
@@ -114,14 +116,8 @@ class MainActivity : AppCompatActivity() {
         //Initialize Woosmap
         woosmap = Woosmap.getInstance().initializeWoosmap(applicationContext)
 
-        // Set the Delay of Duration data
-        WoosmapSettings.numberOfDayDataDuration = 30
-
         // Set Keys
         WoosmapSettings.privateKeyWoosmapAPI = getString(R.string.woosmap_private_key)
-
-        WoosmapSettings.foregroundLocationServiceEnable = true
-        WoosmapSettings.setIndoorSearchAPIEnable(true, applicationContext)
 
         // Set location ready listener
         woosmap.setLocationReadyListener { location ->
@@ -131,11 +127,17 @@ class MainActivity : AppCompatActivity() {
 
         // Set regionlog ready listener
         woosmap.setRegionLogReadyListener { regionLog ->
-            viewPagerAdapter.eventFragment.addRegionLog(regionLog)
-            showRegionNotification(regionLog)
-        }
+            val poi = WoosmapDb.getInstance(applicationContext).poIsDAO.getPOIbyStoreId(regionLog.idStore)
+            val event = EventDataModel()
+            event.eventName = regionLog.eventName
+            event.regionLog = regionLog
+            event.poi = poi
 
-        // For android version >= 8 you have to create a channel or use the woosmap's channel
+            // Insert the event in the list
+            viewPagerAdapter.eventFragment.addEvent(event)
+            // Show notification
+            showRegionNotification(event)
+        }
 
         // For android version >= 8 you have to create a channel or use the woosmap's channel
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -143,15 +145,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun showRegionNotification(regionLog: RegionLog){
-        val poi = WoosmapDb.getInstance(applicationContext).poIsDAO.getPOIbyStoreId(regionLog.idStore)
+    /***
+     *
+     */
+    private fun showRegionNotification(event: EventDataModel){
 
         val notification: Notification = NotificationCompat.Builder(applicationContext, WoosmapSettingsCore.WoosmapNotificationChannelID)
-            .setContentTitle(regionLog.eventName)
-            .setTicker("Region POI name: ${poi.name}")
+            .setContentTitle(event.eventName)
+            .setTicker("POI Name: ${event.poi.name}")
             .setSmallIcon(android.R.drawable.ic_popup_reminder)
-            .setOngoing(false) // Add the cancel action to the notification which can
-            // be used to cancel the worker
+            .setContentText("${event.poi.name}\nRadius is ${event.regionLog.radius} and POI id is ${event.regionLog.idStore}")
+            .setOngoing(false)
             .build()
 
         val notifManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
@@ -226,9 +230,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun requestBluetoothPermissions(){
-        ///This is optional. Only if you need to track BLE beacons
-        requestPermissions(arrayOf(android.Manifest.permission.BLUETOOTH, android.Manifest.permission.BLUETOOTH_CONNECT),REQUEST_BLUETOOTH_PERMISSION_CODE)
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             requestPermissions(arrayOf(android.Manifest.permission.BLUETOOTH, android.Manifest.permission.BLUETOOTH_CONNECT),REQUEST_BLUETOOTH_PERMISSION_CODE)
         }
@@ -253,7 +254,7 @@ class MainActivity : AppCompatActivity() {
             return
         }
         ///Check if the FINE_LOCATION permission is granted. If yes only then proceed further with other permissions.
-        if (requestCode == 101){
+        if (requestCode == REQUEST_LOCATION_PERMISSIONS_CODE){
             if(grantResults[0] != PackageManager.PERMISSION_GRANTED){
                 Toast.makeText(applicationContext, "Location permission not granted. App may not behave as expected", Toast.LENGTH_SHORT).show()
                 return
