@@ -312,7 +312,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -322,6 +321,7 @@ class MainActivity : AppCompatActivity() {
         when (requestCode) {
             REQUEST_FINE_LOCATION -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Access to fine location is granted. Now request background location access.
                     requestBackgroundLocationPermission()
                 } else {
                     Toast.makeText(this, "Fine location permission denied", Toast.LENGTH_SHORT).show()
@@ -329,15 +329,14 @@ class MainActivity : AppCompatActivity() {
             }
             REQUEST_BACKGROUND_LOCATION -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Access to background location is granted. Now request Bluetooth access.
                     requestBluetoothPermissions()
                 } else {
                     Toast.makeText(this, "Background location permission denied", Toast.LENGTH_SHORT).show()
                 }
             }
             REQUEST_BLUETOOTH -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    //Enable BLE
-                } else {
+                if (grantResults.isNotEmpty() && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(this, "Bluetooth permission denied", Toast.LENGTH_SHORT).show()
                 }
             }
