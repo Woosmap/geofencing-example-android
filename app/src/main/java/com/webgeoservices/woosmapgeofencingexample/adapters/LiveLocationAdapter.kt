@@ -43,4 +43,10 @@ class LiveLocationAdapter(private val locations: ArrayList<Location>): RecyclerV
         notifyItemInserted(0) // Notify adapter that an item was inserted at the last position
     }
 
+    fun clearData(){
+        val size = locations.size
+        locations.clear()
+        notifyItemRangeRemoved(0, size)
+    }
+
 }

@@ -21,6 +21,8 @@ import com.webgeoservices.woosmapgeofencing.WoosmapSettings
 import com.webgeoservices.woosmapgeofencingcore.database.WoosmapDb
 import com.webgeoservices.woosmapgeofencingexample.adapters.ViewPagerAdapter
 import com.webgeoservices.woosmapgeofencingexample.models.EventDataModel
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
@@ -36,6 +38,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewPager: ViewPager
     private lateinit var viewPagerAdapter: ViewPagerAdapter
     private var trackingStarted = false
+    private var fabMenuExpanded = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -116,11 +119,39 @@ class MainActivity : AppCompatActivity() {
             if (trackingStarted){
                 view.backgroundTintList = resources.getColorStateList(R.color.colorPrimary, applicationContext.theme)
                 woosmap.startTracking(Woosmap.ConfigurationProfile.passiveTracking)
+                Toast.makeText(applicationContext, "Tracking started", Toast.LENGTH_SHORT).show()
             }
             else{
                 view.backgroundTintList = resources.getColorStateList(R.color.colorAccent, applicationContext.theme)
                 woosmap.stopTracking()
+                Toast.makeText(applicationContext, "Tracking stopped", Toast.LENGTH_SHORT).show()
             }
+        }
+
+        // Initialize floating action button. Which will clear all the entries in the Woosmap database
+        val clearDbButton = findViewById<FloatingActionButton>(R.id.clear_db)
+        clearDbButton.setOnClickListener{
+            // Clear the database tables and remove geofence regions
+            GlobalScope.launch {
+                WoosmapDb.getInstance(applicationContext).clearAllTables()
+                Woosmap.getInstance().removeGeofence()
+            }
+            //Clear the data in the lists
+            viewPagerAdapter.clearLists()
+            Toast.makeText(applicationContext, "Clearing all the database values", Toast.LENGTH_SHORT).show()
+        }
+
+        // Initialize floating action button. Which will clear all the entries in the Woosmap database
+        val fabMenuButton = findViewById<FloatingActionButton>(R.id.fab_menu)
+        fabMenuButton.setOnClickListener{
+            if (!fabMenuExpanded){
+                clearDbButton.animate().translationY(-400f)
+                toggleTackingBtn.animate().translationY(-200f)
+            }else{
+                clearDbButton.animate().translationY(0f)
+                toggleTackingBtn.animate().translationY(0f)
+            }
+            fabMenuExpanded = !fabMenuExpanded
         }
     }
 

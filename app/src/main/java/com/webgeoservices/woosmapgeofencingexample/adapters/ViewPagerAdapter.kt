@@ -24,5 +24,9 @@ class ViewPagerAdapter(fragmentManager: FragmentManager): FragmentPagerAdapter(f
         }
     }
 
+    fun clearLists(){
+        locationFragment.clearList()
+        eventFragment.clearList()
+    }
 
 }

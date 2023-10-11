@@ -38,4 +38,9 @@ class LocationFragment: Fragment() {
         liveLocationDataAdapter.addLocation(location)
         locationsList.smoothScrollToPosition(0)
     }
+
+    fun clearList(){
+        liveLocationDataAdapter.clearData()
+    }
+
 }

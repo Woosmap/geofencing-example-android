@@ -46,4 +46,8 @@ class EventFragment: Fragment() {
             eventList?.smoothScrollToPosition(0)
         }
     }
+
+    fun clearList(){
+        eventsDataAdapter?.clearData()
+    }
 }

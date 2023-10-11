@@ -45,4 +45,10 @@ class EventsDataAdapter(private val events: ArrayList<EventDataModel>): Recycler
         events.add(0, event)
         notifyItemInserted(0) // Notify adapter that an item was inserted at the last position
     }
+
+    fun clearData(){
+        val size = events.size
+        events.clear()
+        notifyItemRangeRemoved(0, size)
+    }
 }

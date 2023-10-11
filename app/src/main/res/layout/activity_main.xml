@@ -28,6 +28,18 @@
         app:itemIconTint="@color/colorPrimary"
         app:menu="@menu/navigation">
     </com.google.android.material.bottomnavigation.BottomNavigationView>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/clear_db"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:clickable="true"
+        android:src="@android:drawable/ic_delete"
+        android:layout_above="@id/bottom_navigation"
+        android:layout_alignParentRight="true"
+        app:elevation="20dp"/>
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/toggle_woosmap_tracking"
         android:layout_width="wrap_content"
@@ -38,6 +50,22 @@
         android:clickable="true"
         app:backgroundTint="@color/colorAccent"
         android:contentDescription="Start Tacking"
-        app:srcCompat="@android:drawable/ic_menu_mylocation"
+        android:src="@android:drawable/ic_menu_mylocation"
         android:focusable="true" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/bottom_navigation"
+        android:layout_alignParentRight="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:clickable="true"
+        android:src="@android:drawable/ic_menu_preferences"
+        app:backgroundTint="@color/colorPrimary"
+        app:elevation="20dp" />
+
 </RelativeLayout>
