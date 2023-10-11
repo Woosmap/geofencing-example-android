@@ -33,7 +33,13 @@ Sample application has three components.
 
 * A floating action button which starts and stops tracking.
 
-### Screenshots here
+
+<img src="https://github.com/strider1981/geofencing-example-android/assets/1289966/cacddeac-d0de-4d62-90b4-4037832438c4"  width="300">
+
+<img src="https://github.com/strider1981/geofencing-example-android/assets/1289966/3f45ca04-30ec-4aff-8cd0-e0429dc236cc"  width="300">
+
+<img src="https://github.com/strider1981/geofencing-example-android/assets/1289966/b78bfe29-d3da-4a1f-974d-9273a148d838"  width="300">
+
 
 ### Permissions
 
