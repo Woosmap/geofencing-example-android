@@ -13,6 +13,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -21,8 +22,9 @@ import com.webgeoservices.woosmapgeofencing.WoosmapSettings
 import com.webgeoservices.woosmapgeofencingcore.database.WoosmapDb
 import com.webgeoservices.woosmapgeofencingexample.adapters.ViewPagerAdapter
 import com.webgeoservices.woosmapgeofencingexample.models.EventDataModel
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
 
@@ -132,13 +134,15 @@ class MainActivity : AppCompatActivity() {
         val clearDbButton = findViewById<FloatingActionButton>(R.id.clear_db)
         clearDbButton.setOnClickListener{
             // Clear the database tables and remove geofence regions
-            GlobalScope.launch {
-                WoosmapDb.getInstance(applicationContext).clearAllTables()
-                Woosmap.getInstance().removeGeofence()
+            lifecycleScope.launch {
+                withContext(Dispatchers.IO){
+                    WoosmapDb.getInstance(applicationContext).clearAllTables()
+                    Woosmap.getInstance().removeGeofence()
+                }
+                //Clear the data in the lists
+                viewPagerAdapter.clearLists()
+                Toast.makeText(applicationContext, "Clearing all the database values", Toast.LENGTH_SHORT).show()
             }
-            //Clear the data in the lists
-            viewPagerAdapter.clearLists()
-            Toast.makeText(applicationContext, "Clearing all the database values", Toast.LENGTH_SHORT).show()
         }
 
         // Initialize floating action button. Which will clear all the entries in the Woosmap database
