@@ -27,10 +27,10 @@ In the activation email, click on the link to activate your account. Once you ac
 In this repository, a sample code is provided for testing quickly the Geofencing Android SDK. Once this code built, a sample app allows you to monitor Point of Interest (previously loaded in the Woosmap Platform). Before runing the example, each POI has to be created as an asset in the Woosmap Console and the Store Search API must be enabled:
 
 **Create an asset for each POI you want to monitor with a geofence**
-<img width="800" alt="image" src="https://github.com/Woosmap/geofencing-example-android/assets/79836861/8bd43617-e6f4-4fbb-adc3-6bb547c59d6e">
+<img width="800" alt="image" src="https://github.com/Woosmap/geofencing-example-android/assets/79836861/c907d76b-b5e0-449b-8ac6-7a24d69dd6c3">
 
 **Enable Woosmap Store Search API**
-<img width="800" alt="image" src="https://github.com/Woosmap/geofencing-example-android/assets/79836861/6070df46-4e44-44ff-821f-cba28634bc49">
+<img width="800" alt="image" src="https://github.com/Woosmap/geofencing-example-android/assets/79836861/4f143c5f-d72f-4eb5-a828-7fe661d74f38">
 
 ### Run the sample app
 
@@ -46,11 +46,12 @@ The sample application has four components.
 
 * A floating action button that clears all the data from local SQLite DB.
 
-<img src="https://github.com/Woosmap/geofencing-example-android/assets/1289966/c5ea4aee-74cf-4de3-902a-05c9a70e1d8a"  width="300">
 
-<img src="https://github.com/Woosmap/geofencing-example-android/assets/1289966/2051c70b-a122-40db-aa13-e7a49d292519"  width="300">
+<img src="https://github.com/Woosmap/geofencing-example-android/assets/1289966/e1f4c498-3088-4360-b5ef-c5eb2ae18850"  width="300">
 
-<img src="https://github.com/Woosmap/geofencing-example-android/assets/1289966/7758a2b6-0858-4797-8ccf-36d9f9856d59"  width="300">
+<img src="https://github.com/Woosmap/geofencing-example-android/assets/1289966/0326f979-9b35-45db-a50f-9dd97a418188"  width="300">
+
+<img src="https://github.com/Woosmap/geofencing-example-android/assets/1289966/9d52d21e-7b12-4874-a999-ce92a5fe3af3"  width="300">
 
 
 ### Permissions
