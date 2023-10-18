@@ -46,11 +46,12 @@ The sample application has four components.
 
 * A floating action button that clears all the data from local SQLite DB.
 
-<img src="https://github.com/Woosmap/geofencing-example-android/assets/1289966/c5ea4aee-74cf-4de3-902a-05c9a70e1d8a"  width="300">
 
-<img src="https://github.com/Woosmap/geofencing-example-android/assets/1289966/2051c70b-a122-40db-aa13-e7a49d292519"  width="300">
+<img src="https://github.com/Woosmap/geofencing-example-android/assets/1289966/e1f4c498-3088-4360-b5ef-c5eb2ae18850"  width="300">
 
-<img src="https://github.com/Woosmap/geofencing-example-android/assets/1289966/7758a2b6-0858-4797-8ccf-36d9f9856d59"  width="300">
+<img src="https://github.com/Woosmap/geofencing-example-android/assets/1289966/0326f979-9b35-45db-a50f-9dd97a418188"  width="300">
+
+<img src="https://github.com/Woosmap/geofencing-example-android/assets/1289966/9d52d21e-7b12-4874-a999-ce92a5fe3af3"  width="300">
 
 
 ### Permissions
