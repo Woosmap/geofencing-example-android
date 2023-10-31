@@ -46,7 +46,7 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
-    api ("com.webgeoservices.woosmapgeofencing:woosmap-mobile-sdk:4.0.5")
+    api ("com.webgeoservices.woosmapgeofencing:woosmap-mobile-sdk:4.0.6")
     api ("androidx.room:room-runtime:2.5.2")
     api ("com.google.android.gms:play-services-maps:18.1.0")
 }
