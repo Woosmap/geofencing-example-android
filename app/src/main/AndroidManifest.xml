@@ -30,6 +30,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <meta-data
+            android:name="woosmap.messaging.default_notification_icon"
+            android:resource="@drawable/ic_shopping_cart_black_24dp" />
+        <meta-data android:name="woosmap_notification_defautl_uri"
+            android:value="sample://notif" />
     </application>
 
 </manifest>
