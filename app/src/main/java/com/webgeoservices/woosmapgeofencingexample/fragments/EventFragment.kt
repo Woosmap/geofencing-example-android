@@ -76,7 +76,13 @@ class EventFragment: Fragment() {
                     eventData = EventDataModel()
 
                     // Fetch the related POI from region log
-                    poi = WoosmapDb.getInstance(context).poIsDAO.getPOIbyStoreId(regionLog.idStore)
+                    if (regionLog.idStore!=null && !regionLog.idStore.equals("")){
+                        poi = WoosmapDb.getInstance(context).poIsDAO.getPOIbyStoreId(regionLog.idStore)
+                    }
+                    else{
+                        poi = POI()
+                        poi.name = "Custom Region - ${regionLog.identifier}"
+                    }
 
                     // Initialize EventDataModel with proper values and add it to the list
                     eventData.eventName = regionLog.eventName

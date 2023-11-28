@@ -15,10 +15,12 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager.widget.ViewPager
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.webgeoservices.woosmapgeofencing.Woosmap
 import com.webgeoservices.woosmapgeofencing.WoosmapSettings
+import com.webgeoservices.woosmapgeofencingcore.database.POI
 import com.webgeoservices.woosmapgeofencingcore.database.WoosmapDb
 import com.webgeoservices.woosmapgeofencingexample.adapters.ViewPagerAdapter
 import com.webgeoservices.woosmapgeofencingexample.models.EventDataModel
@@ -62,6 +64,13 @@ class MainActivity : AppCompatActivity() {
         if (checkLocationPermissions()) {
             woosmap.onPause()
         }
+    }
+
+    private fun addCustomGeofence(){
+        ///Add your custom geofence here.
+        woosmap.addGeofence("Dhruv", LatLng(19.211846595823815, 72.86474449182067), 50.0f)
+        woosmap.addGeofence("Aster", LatLng(19.21330314920925, 72.87658588088794), 50.0f)
+        woosmap.addGeofence("Plaza", LatLng(19.210231548214246, 72.86601191545428), 50.0f)
     }
 
     override fun onResume() {
@@ -120,6 +129,7 @@ class MainActivity : AppCompatActivity() {
             trackingStarted = !trackingStarted
             if (trackingStarted){
                 view.backgroundTintList = resources.getColorStateList(R.color.colorPrimary, applicationContext.theme)
+                addCustomGeofence()
                 woosmap.startTracking(Woosmap.ConfigurationProfile.passiveTracking)
                 Toast.makeText(applicationContext, "Tracking started", Toast.LENGTH_SHORT).show()
             }
@@ -185,7 +195,14 @@ class MainActivity : AppCompatActivity() {
 
             // Fetch the related POI using `idStore` property from SDK's local database
             // and create a new `EventDataModel` object to populate event list with the new event
-            val poi = WoosmapDb.getInstance(applicationContext).poIsDAO.getPOIbyStoreId(regionLog.idStore)
+            var poi:POI
+            if (regionLog.idStore!=null && !regionLog.idStore.equals("")){
+                poi = WoosmapDb.getInstance(applicationContext).poIsDAO.getPOIbyStoreId(regionLog.idStore)
+            }
+            else{
+                poi = POI()
+                poi.name = "Custom Region - ${regionLog.identifier}"
+            }
             val event = EventDataModel()
             event.eventName = regionLog.eventName
             event.regionLog = regionLog
@@ -239,7 +256,7 @@ class MainActivity : AppCompatActivity() {
             .setContentTitle(event.eventName)
             .setTicker("POI Name: ${event.poi.name}")
             .setSmallIcon(android.R.drawable.ic_popup_reminder)
-            .setContentText("${event.poi.name}\nRadius is ${event.regionLog.radius} and POI id is ${event.regionLog.idStore}")
+            .setContentText("${event.poi.name}\nRadius is ${event.regionLog.radius} and POI id is ${event.regionLog.idStore+""}")
             .setOngoing(false)
             .build()
 
